@@ -81,6 +81,7 @@ const (
 	cFILE_CREATE = 2
 
 	cFILE_PIPE_MESSAGE_TYPE          = 1
+	cFILE_PIPE_ACCEPT_REMOTE_CLIENTS = 0
 	cFILE_PIPE_REJECT_REMOTE_CLIENTS = 2
 
 	cSE_DACL_PRESENT = 4
@@ -308,6 +309,9 @@ func makeServerPipeHandle(path string, sd []byte, c *PipeConfig, first bool) (sy
 	}
 
 	typ := uint32(cFILE_PIPE_REJECT_REMOTE_CLIENTS)
+	if c.RemoteClientMode {
+		typ = cPIPE_ACCEPT_REMOTE_CLIENTS
+	}
 	if c.MessageMode {
 		typ |= cFILE_PIPE_MESSAGE_TYPE
 	}
@@ -421,6 +425,9 @@ type PipeConfig struct {
 	// transferred to the reader (and returned as io.EOF in this implementation)
 	// when the pipe is in message mode.
 	MessageMode bool
+
+	// RemoteClientMode determines whether the pipe can be accessed remotely.
+	RemoteClientMode bool
 
 	// InputBufferSize specifies the size the input buffer, in bytes.
 	InputBufferSize int32
